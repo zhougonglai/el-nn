@@ -1,10 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron'
-
-
-contextBridge.exposeInMainWorld('electronAPI',{
-  openFile: (arg) => ipcRenderer.invoke('dialog:openFile', arg),
-  openWin: (arg) => ipcRenderer.invoke('open-win', arg)
-})
+import './api';
+import './theme';
 
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {

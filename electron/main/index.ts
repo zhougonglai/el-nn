@@ -1,6 +1,8 @@
-import { app, BrowserWindow, shell, ipcMain, dialog, Tray, nativeImage, Menu } from 'electron'
+import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
+import { app, BrowserWindow, shell, ipcMain, dialog, Tray, Menu } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
+import { darkMode, systemTheme, getTheme } from './ipcMain'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -41,14 +43,16 @@ async function handleFileOpen(e, args) {
 }
 
 async function createWindow() {
-  tray = new Tray(join(ROOT_PATH.public, 'node.png'))
-  tray.setContextMenu(Menu.buildFromTemplate([
-    { label: 'Item1', type: 'radio' },
-  ]))
+  // tray = new Tray(join(ROOT_PATH.public, 'node.png'))
+  // tray.setContextMenu(Menu.buildFromTemplate([
+  //   { label: 'Item1', type: 'radio' },
+  // ]))
 
   win = new BrowserWindow({
     title: 'NN互娱',
     icon: join(ROOT_PATH.public, 'favicon.ico'),
+    width: 1240,
+    height: 800,
     frame: false,
     transparent: true,
     titleBarOverlay: true,
@@ -58,8 +62,10 @@ async function createWindow() {
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
       // Consider using contextBridge.exposeInMainWorld
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
-      nodeIntegration: true,
+      // nodeIntegration: true,
       // contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   })
 
@@ -83,9 +89,23 @@ async function createWindow() {
   })
 
   ipcMain.handle('dialog:openFile', handleFileOpen)
+
+  ipcMain.handle('dark-mode:toggle', () => {
+    darkMode();
+    win.webContents.send('dark-mode:change', getTheme());
+  })
+  ipcMain.handle('dark-mode:system', () => {
+    systemTheme();
+    win.webContents.send('dark-mode:change', getTheme());
+  })
+  ipcMain.handle('dark-mode', getTheme)
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  return installExtension(VUEJS3_DEVTOOLS)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err));
+}).then(createWindow)
 
 app.on('window-all-closed', () => {
   win = null
@@ -111,18 +131,26 @@ app.on('activate', () => {
 
 // new window example arg: new windows url
 ipcMain.handle('open-win', (event, arg) => {
-  console.log('open-win', 'setting', arg)
+  console.log('open-win', url + arg)
   const childWindow = new BrowserWindow({
     title: 'NN互娱',
+    icon: join(ROOT_PATH.public, 'favicon.ico'),
+    width: 915,
+    height: 542,
+    transparent: true,
+    titleBarOverlay: true,
+    titleBarStyle: 'hidden',
     webPreferences: {
       preload,
+      nodeIntegration: true,
     },
   })
 
   if (app.isPackaged) {
     childWindow.loadFile(indexHtml, { hash: arg })
   } else {
-    childWindow.loadURL(arg)
+    childWindow.loadURL(`${url}${arg}`)
     // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
+    childWindow.webContents.openDevTools()
   }
 })

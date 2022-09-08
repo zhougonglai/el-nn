@@ -1,5 +1,5 @@
 <template lang="pug">
-section setting
+section.flex-1.bg-white setting
 </template>
 
 <script>
@@ -7,4 +7,5 @@ section setting
 </script>
 
 <style>
+
 </style>

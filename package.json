@@ -18,6 +18,7 @@
     "autoprefixer": "^10.4.8",
     "electron": "^20.0.2",
     "electron-builder": "^23.3.3",
+    "electron-devtools-installer": "^3.2.0",
     "postcss": "^8.4.16",
     "pug": "^3.0.2",
     "sass": "^1.54.8",

@@ -1,5 +1,5 @@
 <template lang="pug">
-section home
+section.flex-1.bg-white home
 </template>
 
 <script>
@@ -9,4 +9,5 @@ export default {
 </script>
 
 <style>
+
 </style>
