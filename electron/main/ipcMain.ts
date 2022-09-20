@@ -20,3 +20,4 @@ export const getTheme = () => ({
   shouldUseInvertedColorScheme: nativeTheme.shouldUseInvertedColorScheme,
   inForcedColorsMode: nativeTheme.inForcedColorsMode
 })
+

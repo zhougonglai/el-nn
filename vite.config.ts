@@ -3,12 +3,37 @@ import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron, { onstart } from 'vite-plugin-electron'
+import glob from 'glob'
 import pkg from './package.json'
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve('src'),
+      '~/': path.resolve('src/assets')
+    }
+  },
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      input: glob.sync("**/*.html", {
+        ignore: [
+          'dist/**',
+          'public/**',
+          'doc/**',
+          'resources/**',
+          'release/**',
+          '**/node_modules/**'
+        ]
+      }),
+      output: {
+        format: 'module'
+      }
+    }
+  },
   plugins: [
     vue(),
     electron({
