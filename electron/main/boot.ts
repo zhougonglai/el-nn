@@ -25,6 +25,7 @@ export default class App {
   wins = {
     main: null,
     sign: null,
+    setting: null,
   };
   tray;
 
@@ -42,6 +43,7 @@ export default class App {
       this.wins = {
         main: null,
         sign: null,
+        setting: null,
       };
       if (process.platform !== 'darwin') app.quit()
     })
